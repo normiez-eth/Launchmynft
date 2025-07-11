@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>LaunchMyNFT Merch Edit</title>
+    <style>
+        :root {
+            --input-red: #0081a7;
+            --search-teal: #0081a7;
+            --reset-orange: #f77f00;
+            --text-light: #ffffff;
+            --border-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Arial Black', Gadget, sans-serif;
+            margin: 0;
+            background-color: #3a86ff;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .app-header {
+            margin-bottom: 25px;
+        }
+
+        .header-logo {
+            height: 60px;
+            width: auto;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .title span {
+            text-decoration: underline;
+        }
+
+        .carousel-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .arrow {
+            background: none;
+            border: none;
+            color: orange;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            z-index: 10;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .arrow-left { left: -25px; }
+        .arrow-right { right: -25px; }
+
+        .carousel-viewport {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-container {
+            display: flex;
+            transition: transform 0.4s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            padding: 5px;
+        }
+
+        .controls-box {
+            border: 3px solid var(--border-color);
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 2% 1% 3% 2% / 1% 3% 2% 4%;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            background-color: var(--input-red);
+            color: var(--text-light);
+            font-family: inherit;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        input[type="number"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .search-btn { background-color: var(--search-teal); }
+        .reset-btn { background-color: var(--reset-orange); }
+
+        .image-display-box {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            background-color: #1a1a1a;
+            border: 3px solid var(--border-color);
+            border-radius: 1% 3% 2% 4% / 2% 1% 3% 2%;
+        }
+        .image-display-box img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+        .nft-image { z-index: 1; }
+        .overlay-image { z-index: 2; display: none; }
+
+        .message {
+            margin-top: 10px;
+            min-height: 20px;
+            font-size: 0.8rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        .error { color: #ffff00; }
+        
+        .merch-btn {
+            background-color: var(--reset-orange);
+            margin-top: 10px;
+        }
+        .merch-btn.on {
+            background-color: #5cb85c;
+        }
+
+        .merch-options-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .merch-option-btn {
+            background-color: #6c757d;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+        }
+        .merch-option-btn.active {
+            background-color: var(--search-teal);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .download-btn {
+            background-color: var(--search-teal);
+            margin-top: 10px;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header class="app-header">
+        <img id="headerLogo" alt="LaunchMyNFT Logo" class="header-logo">
+        <h1 class="title">LAUNCHMYNFT MERCH EDITOR</h1>
+    </header>
+
+    <main class="carousel-wrapper">
+        <button class="arrow arrow-left"><</button>
+        <div class="carousel-viewport" id="carousel-viewport">
+            <div class="carousel-container" id="carousel-container">
+                <!-- Slides will be generated by JavaScript -->
+            </div>
+        </div>
+        <button class="arrow arrow-right">></button>
+    </main>
+</div>
+
+
+<script>
+    // Fungsi ini tetap ada untuk menguraikan URL yang disamarkan
+    const decode = (b64) => atob(b64);
+
+    const nftCollections = [
+        {
+            name: 'Pudgy Penguins',
+            type: 'pudgypenguins',
+            // URL API Publik - tidak disamarkan
+            apiUrl: id => `https://ipfs.io/ipfs/bafybeibc5sgo2plmjkq2tzmhrn54bk3crhnc23zd2msg4ea7a4pxrkgfna/${id}`,
+            maxId: 8888,
+            placeholder: 'YOUR PENGUIN ID',
+            // URL Gateway Publik - tidak disamarkan
+            getImageFromData: data => data.image.replace('ipfs://', 'https://ipfs.io/ipfs/'),
+            // URL Aset Pribadi - DISAMARKAN
+            previewImage: decode('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L2RlZ29kcy9yZWZzL2hlYWRzL2Fzc2V0cy9wcmV2aWV3JTIwcHVkZ3klMjBwZW5ndWluLnBuZw=='),
+            hasMerch: true,
+            merchName: 'GM',
+            merchTrait: 'Skin',
+            // URL Aset Pribadi - DISAMARKAN
+            merchUrlBase: decode('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0xhdW5jaG15bmZ0L1B1ZGd5LXBlbmd1aW4tZ20tbXVnLw==')
+        },
+        {
+            name: 'Azuki',
+            type: 'azuki',
+            // URL API Publik - tidak disamarkan
+            apiUrl: id => `https://ipfs.io/ipfs/QmZcH4YvBVVRJtdn4RdbaqgspFU8gH6P9vomDpBVpAL3u4/${id}`,
+            maxId: 9999,
+            placeholder: 'YOUR AZUKI ID',
+            // URL Gateway Publik - tidak disamarkan
+            getImageFromData: data => data.image.replace('ipfs://', 'https://ipfs.io/ipfs/'),
+            // URL Aset Pribadi - DISAMARKAN
+            previewImage: decode('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L2RlZ29kcy9yZWZzL2hlYWRzL2Fzc2V0cy9wcmV2aWV3JTIwYXp1a2kucG5n'),
+            hasMerch: true,
+            merchName: 'GM',
+            merchConfig: {
+                type: 'complex',
+                triggerTrait: 'Type',
+                // URL Aset Pribadi - DISAMARKAN
+                urlBase: decode('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0xhdW5jaG15bmZ0L3JlZnMvaGVhZHMvQXp1a2ktZ20tbXVnLw=='),
+                options: {
+                    HUMAN:  { count: 3, baseName: 'Human' },
+                    BLUE:   { count: 3, baseName: 'Blue' },
+                    RED:    { count: 2, baseName: 'Red' },
+                    SPIRIT: { count: 0, baseName: 'Spirit' }
+                }
+            }
+        },
+        {
+            name: 'y00ts',
+            type: 'y00ts',
+            // URL API Publik - tidak disamarkan
+            apiUrl: id => `https://metadata.y00ts.com/y/${id - 1}.json`,
+            maxId: 15000,
+            placeholder: 'YOUR Y00T ID',
+            getImageFromData: data => data.image,
+            hasMerch: true,
+            merchName: 'GM',
+            merchTrait: 'Fur',
+            // URL Aset Pribadi - DISAMARKAN
+            merchUrlBase: decode('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0xhdW5jaG15bmZ0L1kwMHRzLWdtLW11Zy8='),
+            // URL Aset Pribadi - DISAMARKAN
+            previewImage: decode('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L2RlZ29kcy9yZWZzL2hlYWRzL2Fzc2V0cy9wcmV2aWV3JTIweTAwdHMucG5n')
+        },
+        {
+            name: 'DeGods',
+            type: 'degods',
+            // URL API Publik - tidak disamarkan
+            apiUrl: id => `https://metadata.degods.com/g/${id - 1}.json`,
+            maxId: 10000,
+            placeholder: 'YOUR DEGOD ID',
+            getImageFromData: data => data.image,
+            // URL Aset Pribadi - DISAMARKAN
+            previewImage: decode('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L2RlZ29kcy9yZWZzL2hlYWRzL2Fzc2V0cy9wcmV2aWV3JTIwZGVnb2QucG5n'),
+            hasMerch: true,
+            merchName: 'GM',
+            merchTrait: 'skin',
+            // URL Aset Pribadi - DISAMARKAN
+            merchUrlBase: decode('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0xhdW5jaG15bmZ0L3JlZnMvaGVhZHMvRGVnb2QtZ20tbXVnLw==')
+        }
+    ];
+
+    // --- State and DOM References ---
+    const carouselContainer = document.getElementById('carousel-container');
+    const carouselViewport = document.getElementById('carousel-viewport');
+    const leftArrow = document.querySelector('.arrow-left');
+    const rightArrow = document.querySelector('.arrow-right');
+
+    let currentIndex = 0;
+    const totalSlides = nftCollections.length;
+    let slideStates = [];
+    let currentFetchController = null;
+
+    // --- Carousel Logic ---
+    function generateSlides() {
+        nftCollections.forEach((collection, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'slide';
+            slide.dataset.index = index;
+            slide.innerHTML = `
+                <div class="controls-box">
+                    <div class="search-controls">
+                        <input type="number" class="id-input" placeholder="${collection.placeholder}" min="1" max="${collection.maxId}">
+                        <button class="search-btn">Search</button>
+                        <button class="reset-btn">Reset</button>
+                    </div>
+                </div>
+                <div class="image-display-box">
+                    <img class="nft-image" src="${collection.previewImage}" alt="NFT Preview">
+                    <img class="overlay-image" src="" alt="Overlay">
+                </div>
+                <div class="message"></div>
+                <div class="merch-controls">
+                    ${collection.hasMerch ? `<button class="merch-btn">${collection.merchName}</button>` : ''}
+                    <div class="merch-options-container"></div>
+                </div>
+                <button class="download-btn" style="display:none;">Download Image</button>
+            `;
+            carouselContainer.appendChild(slide);
+
+            slideStates.push({
+                lastFetchedMetadata: null,
+                showMerch: false,
+                activeMerchOption: 1,
+            });
+        });
+    }
+
+    function updateCarousel() { carouselContainer.style.transform = `translateX(${currentTranslate}px)`; }
+    function setPositionByIndex() { currentTranslate = currentIndex * -carouselViewport.clientWidth; prevTranslate = currentTranslate; carouselContainer.style.transition = 'transform 0.4s ease-in-out'; updateCarousel(); }
+    function animation() { updateCarousel(); if (isDragging) requestAnimationFrame(animation); }
+    function touchStart(index) { return function(event) { isDragging = true; startPos = getPositionX(event); carouselContainer.style.transition = 'none'; animationID = requestAnimationFrame(animation); }; }
+    function touchMove(event) { if (isDragging) { const currentPosition = getPositionX(event); currentTranslate = prevTranslate + currentPosition - startPos; } }
+    function touchEnd() { isDragging = false; cancelAnimationFrame(animationID); const movedBy = currentTranslate - prevTranslate; if (movedBy < -50 && currentIndex < totalSlides - 1) { currentIndex += 1; } if (movedBy > 50 && currentIndex > 0) { currentIndex -= 1; } setPositionByIndex(); }
+    function getPositionX(event) { return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX; }
+    function moveCarousel(direction) { if (direction === 'next' && currentIndex < totalSlides - 1) { currentIndex++; } else if (direction === 'prev' && currentIndex > 0) { currentIndex--; } setPositionByIndex(); }
+    
+    // --- NFT Fetching & Display Logic ---
+    function getSlideElements(slide) {
+        return {
+            input: slide.querySelector('.id-input'),
+            searchBtn: slide.querySelector('.search-btn'),
+            resetBtn: slide.querySelector('.reset-btn'),
+            nftImage: slide.querySelector('.nft-image'),
+            overlayImage: slide.querySelector('.overlay-image'),
+            messageDiv: slide.querySelector('.message'),
+            merchBtn: slide.querySelector('.merch-btn'),
+            merchOptionsContainer: slide.querySelector('.merch-options-container'),
+            downloadBtn: slide.querySelector('.download-btn'),
+        }
+    }
+
+    function handleSearch(event) {
+        const slide = event.target.closest('.slide');
+        const index = parseInt(slide.dataset.index);
+        const config = nftCollections[index];
+        const elements = getSlideElements(slide);
+        const idValue = elements.input.value.trim();
+        if (currentFetchController) { currentFetchController.abort(); }
+        currentFetchController = new AbortController();
+        const { signal } = currentFetchController;
+        resetSlideUI(slide, false);
+        if (!idValue) { elements.messageDiv.textContent = 'PLEASE ENTER AN ID.'; elements.messageDiv.className = 'message error'; return; }
+        const id = parseInt(idValue);
+        const minId = (config.name === 'Azuki' ? 0 : 1);
+        if (isNaN(id) || id < minId || id > config.maxId) { elements.messageDiv.textContent = `INVALID ID (${minId}-${config.maxId}).`; elements.messageDiv.className = 'message error'; return; }
+        elements.messageDiv.textContent = 'LOADING...';
+        elements.messageDiv.className = 'message';
+        fetchNFT(id, index, signal);
+    }
+    
+    async function fetchNFT(id, index, signal) {
+        const config = nftCollections[index];
+        const slide = carouselContainer.children[index];
+        const elements = getSlideElements(slide);
+        const apiUrl = config.apiUrl(id);
+        try {
+            const response = await fetch(apiUrl, { signal });
+            if (!response.ok) throw new Error(`FETCH FAILED (STATUS: ${response.status})`);
+            const metadata = await response.json();
+            slideStates[index].lastFetchedMetadata = metadata;
+            const imageUrl = config.getImageFromData(metadata);
+            if (!imageUrl) throw new Error('IMAGE NOT FOUND IN METADATA.');
+            elements.nftImage.crossOrigin = "Anonymous";
+            elements.nftImage.onload = () => { elements.messageDiv.textContent = ''; elements.downloadBtn.style.display = 'inline-block'; }
+            elements.nftImage.onerror = () => { throw new Error('FAILED TO LOAD NFT IMAGE.'); }
+            elements.nftImage.src = imageUrl;
+            elements.nftImage.alt = `${config.name} #${id}`;
+        } catch (err) {
+            if (err.name === 'AbortError') { console.log('Fetch aborted.'); return; }
+            console.error(err);
+            elements.messageDiv.textContent = err.message.toUpperCase();
+            elements.messageDiv.className = 'message error';
+            resetSlideUI(slide, true);
+        }
+    }
+
+    function resetSlideUI(slide, showPreview = true) {
+        const index = parseInt(slide.dataset.index);
+        const config = nftCollections[index];
+        const elements = getSlideElements(slide);
+        elements.input.value = '';
+        elements.messageDiv.textContent = '';
+        elements.downloadBtn.style.display = 'none';
+        if (showPreview) { elements.nftImage.src = config.previewImage; elements.nftImage.alt = 'NFT Preview'; }
+        slideStates[index].lastFetchedMetadata = null;
+        if (config.hasMerch) {
+            slideStates[index].showMerch = false;
+            if(elements.merchBtn) elements.merchBtn.classList.remove('on');
+            elements.overlayImage.style.display = 'none';
+            elements.merchOptionsContainer.style.display = 'none';
+            elements.merchOptionsContainer.innerHTML = '';
+        }
+    }
+
+    function handleReset(event) {
+        const slide = event.target.closest('.slide');
+        resetSlideUI(slide, true);
+    }
+    
+    function handleToggleMerch(event) {
+        const slide = event.target.closest('.slide');
+        const index = parseInt(slide.dataset.index);
+        slideStates[index].showMerch = !slideStates[index].showMerch;
+        updateMerchVisibility(slide);
+    }
+
+    function handleMerchOptionClick(event) {
+        const button = event.target;
+        const slide = button.closest('.slide');
+        const index = parseInt(slide.dataset.index);
+        slideStates[index].activeMerchOption = button.dataset.option;
+        updateMerchVisibility(slide);
+    }
+    
+    function updateMerchVisibility(slide) {
+        const index = parseInt(slide.dataset.index);
+        const state = slideStates[index];
+        const config = nftCollections[index];
+        const elements = getSlideElements(slide);
+        if (!config.hasMerch || !state.lastFetchedMetadata) return;
+        elements.merchBtn.classList.toggle('on', state.showMerch);
+        if (!state.showMerch) {
+            elements.overlayImage.style.display = 'none';
+            elements.merchOptionsContainer.style.display = 'none';
+            elements.merchOptionsContainer.innerHTML = '';
+            return;
+        }
+        elements.overlayImage.crossOrigin = "Anonymous";
+        if (config.merchConfig?.type === 'complex') {
+            const triggerAttribute = state.lastFetchedMetadata.attributes.find(attr => attr.trait_type.toLowerCase() === config.merchConfig.triggerTrait.toLowerCase());
+            if (!triggerAttribute) { console.warn(`Required trait '${config.merchConfig.triggerTrait}' not found.`); return; }
+            const traitValue = triggerAttribute.value.toUpperCase();
+            const optionConfig = config.merchConfig.options[traitValue];
+            if (!optionConfig) { console.warn(`No merch config for Type: ${traitValue}`); elements.overlayImage.style.display = 'none'; elements.merchOptionsContainer.style.display = 'none'; return; }
+            if (optionConfig.count === 0) {
+                elements.merchOptionsContainer.style.display = 'none'; elements.merchOptionsContainer.innerHTML = '';
+                const overlayUrl = `${config.merchConfig.urlBase}${encodeURIComponent(optionConfig.baseName)}.png`;
+                elements.overlayImage.src = overlayUrl;
+                elements.overlayImage.style.display = 'block';
+            } else {
+                if (elements.merchOptionsContainer.innerHTML === '') {
+                    for (let i = 1; i <= optionConfig.count; i++) {
+                        const btn = document.createElement('button');
+                        btn.className = 'merch-option-btn'; btn.textContent = i; btn.dataset.option = i;
+                        btn.addEventListener('click', handleMerchOptionClick);
+                        elements.merchOptionsContainer.appendChild(btn);
+                    }
+                    state.activeMerchOption = 1;
+                }
+                elements.merchOptionsContainer.style.display = 'flex';
+                elements.merchOptionsContainer.querySelectorAll('.merch-option-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.option == state.activeMerchOption); });
+                const overlayUrl = `${config.merchConfig.urlBase}${encodeURIComponent(optionConfig.baseName + ' ' + state.activeMerchOption)}.png`;
+                elements.overlayImage.src = overlayUrl;
+                elements.overlayImage.style.display = 'block';
+            }
+        } else {
+            elements.merchOptionsContainer.style.display = 'none'; elements.merchOptionsContainer.innerHTML = '';
+            const relevantAttribute = state.lastFetchedMetadata.attributes.find(attr => attr.trait_type.toLowerCase() === config.merchTrait.toLowerCase());
+            if (relevantAttribute?.value) {
+                const overlayUrl = `${config.merchUrlBase}${encodeURIComponent(relevantAttribute.value)}.png`;
+                elements.overlayImage.src = overlayUrl;
+                elements.overlayImage.style.display = 'block';
+            } else {
+                console.warn(`Required trait '${config.merchTrait}' not found.`);
+                elements.overlayImage.style.display = 'none';
+            }
+        }
+    }
+
+    function drawImageCover(ctx, img) {
+        return new Promise((resolve, reject) => {
+            const canvas = ctx.canvas;
+            const hRatio = canvas.width / img.naturalWidth;
+            const vRatio = canvas.height / img.naturalHeight;
+            const ratio = Math.max(hRatio, vRatio);
+            const offsetX = (canvas.width - img.naturalWidth * ratio) / 2;
+            const offsetY = (canvas.height - img.naturalHeight * ratio) / 2;
+            if (img.complete && img.naturalWidth > 0) {
+                ctx.drawImage(img, offsetX, offsetY, img.naturalWidth * ratio, img.naturalHeight * ratio);
+                resolve();
+            } else {
+                const tempImg = new Image();
+                tempImg.crossOrigin = "Anonymous";
+                tempImg.onload = () => {
+                    ctx.drawImage(tempImg, offsetX, offsetY, tempImg.naturalWidth * ratio, tempImg.naturalHeight * ratio);
+                    resolve();
+                };
+                tempImg.onerror = () => {
+                    console.error("Failed to load image for canvas drawing:", img.src);
+                    reject(new Error("Image load failed for canvas"));
+                };
+                tempImg.src = img.src;
+            }
+        });
+    }
+
+    async function handleDownload(event) {
+        const slide = event.target.closest('.slide');
+        const index = parseInt(slide.dataset.index);
+        const config = nftCollections[index];
+        const state = slideStates[index];
+        const elements = getSlideElements(slide);
+        if (!state.lastFetchedMetadata || !elements.nftImage.complete || elements.nftImage.naturalWidth === 0) {
+            alert("Please wait for the NFT image to fully load before downloading.");
+            return;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = 1000;
+        canvas.height = 1000;
+        const ctx = canvas.getContext('2d');
+        try {
+            await drawImageCover(ctx, elements.nftImage);
+            if (state.showMerch && elements.overlayImage.style.display !== 'none' && elements.overlayImage.src) {
+                await drawImageCover(ctx, elements.overlayImage);
+            }
+            let filename = `${config.type}_${elements.input.value}`;
+            if (state.showMerch) {
+                filename += '_GM';
+                if (config.merchConfig?.type === 'complex') {
+                    const traitValue = state.lastFetchedMetadata.attributes.find(a => a.trait_type.toLowerCase() === config.merchConfig.triggerTrait.toLowerCase()).value.toUpperCase();
+                    if (config.merchConfig.options[traitValue]?.count > 0) {
+                        filename += `_${state.activeMerchOption}`;
+                    }
+                }
+            }
+            filename += '.png';
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (error) {
+            console.error("Error creating download:", error);
+            alert("Could not create the image for download. Please try again. If the problem persists, check the console for errors.");
+        }
+    }
+
+    // --- Init ---
+    function initialize() {
+        const b64_background = 'aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L2RlZ29kcy9yZWZzL2hlYWRzL2Fzc2V0cy9iYWNrZ3JvdW5kJTIwTGF1bmNobXluZnQucG5n';
+        const b64_logo = 'aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L2RlZ29kcy9yZWZzL2hlYWRzL2Fzc2V0cy9sb2dvJTIwTGF1bmNobXluZnQucG5n';
+        document.body.style.backgroundImage = `url(${decode(b64_background)})`;
+        document.getElementById('headerLogo').src = decode(b64_logo);
+        
+        generateSlides();
+        setPositionByIndex();
+        leftArrow.addEventListener('click', () => moveCarousel('prev'));
+        rightArrow.addEventListener('click', () => moveCarousel('next'));
+        carouselViewport.addEventListener('mousedown', touchStart(currentIndex));
+        carouselViewport.addEventListener('touchstart', touchStart(currentIndex));
+        carouselViewport.addEventListener('mouseup', touchEnd);
+        carouselViewport.addEventListener('touchend', touchEnd);
+        carouselViewport.addEventListener('mouseleave', touchEnd);
+        carouselViewport.addEventListener('mousemove', touchMove);
+        carouselViewport.addEventListener('touchmove', touchMove);
+        document.querySelectorAll('.slide').forEach(slide => {
+            const { searchBtn, resetBtn, merchBtn, downloadBtn } = getSlideElements(slide);
+            searchBtn.addEventListener('click', handleSearch);
+            resetBtn.addEventListener('click', handleReset);
+            if (merchBtn) {
+                merchBtn.addEventListener('click', handleToggleMerch);
+            }
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', handleDownload);
+            }
+            slide.querySelector('.id-input').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    searchBtn.click();
+                }
+            });
+        });
+        window.addEventListener('resize', setPositionByIndex);
+    }
+
+    initialize();
+</script>
+
+</body>
+</html>
